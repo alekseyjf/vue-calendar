@@ -10,11 +10,11 @@
           input(type="text")
 
       main.calendar__main
-        ul.calendar__list
-          day-components
+        day-components()
 </template>
 
 <script>
+
   import DayComponents from './components/day'
 
   export default {
@@ -24,14 +24,9 @@
     name: 'app',
     data() {
       return {
+        moment: moment,
         msg: 'Welcome to Your Vue App Alex',
         ms: 'vue-loader',
-
-      }
-    },
-    comenents: {
-      day: {
-        tamplate: '#day'
       }
     }
   }
