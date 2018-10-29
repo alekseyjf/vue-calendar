@@ -1,5 +1,7 @@
 <template lang="pug">
   ul.calendar__list
+    li.calendar__item.name-month(v-for="day in dayName") {{day}}
+
     li.calendar__item.prev-month(v-for="itemPrev in +firstDayMonth -1") {{itemPrev}}
     li.calendar__item( v-for="item, i in +dayInMonth" @click="current(item,i)" :class="{active: flag == i}") {{item}}
 
@@ -35,7 +37,7 @@
         isActive: false,
         eventDay: null,
         flagEdit: false,
-
+        dayName: ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],
 
         firstDayMonth : this.moment().startOf('month').day(), // первый день месяца
         dayInMonth : this.moment().endOf("month").format('DD'),
