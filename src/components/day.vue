@@ -1,14 +1,24 @@
 <template lang="pug">
   ul.calendar__list
-    <!--li.calendar__item.prev-month(v-for="itemPrev in +firstDayMonth -1") {{itemPrev}}-->
-    <!--li.calendar__item( v-for="item, i in +dayInMonth" @click="current(item,i)" :class="{active: flag == i}") {{item}}-->
-    li {{ moment().format('LTS') }}
-    <!--li.calendar__item {{ firstDayMonth }}-->
-    <!--li.calendar__item {{ lastDayPrevMonth }}-->
+    li.calendar__item.prev-month(v-for="itemPrev in +firstDayMonth -1") {{itemPrev}}
+    li.calendar__item( v-for="item, i in +dayInMonth" @click="current(item,i)" :class="{active: flag == i}") {{item}}
+
+      b( v-for="itemEvent in eventsObj", v-if="itemEvent._id == i + 1" @click="openPopup(itemEvent._id)" ) {{itemEvent.event}}
 
 
-  //(v-for="dfirst in D1Nfirst")
+
+      .popup
+        button(@click="closePopup()").close
+        input(type="text" v-model="obj.event" placeholder="event")
+        input(type="text" v-model="obj.date" placeholder="date")
+        input(type="text" v-model="obj.name" placeholder="name")
+
+        button( v-if="!flagEdit", @click="writeDate(i)") Готово
+        button( v-else, @click="editDate(i)") Редактировать
+
+    pre {{ eventsObj }}
 </template>
+
 <script>
 
   //import moment from 'moment'
@@ -17,49 +27,95 @@
     data() {
       return {
         // moment: moment,
+        eventsObj: [],
         flag : null,
         prevMonth: [],
         prevMonthDay: [],
         isActive: false,
+        eventDay: null,
+        flagEdit: false,
 
-        // firstDayMonth : moment().startOf('month').day(), // первый день месяца
-        // lastDayMonth : moment().endOf("month").day(), // последний день месяца
-        // dayInMonth : moment().endOf("month").format('DD'),
-        // day: moment().endOf("month").format('DD'),
-        // dayInPrevMonth : moment("2018/08/07").endOf("month").day(), // последний день месяца
 
+        firstDayMonth : this.moment().startOf('month').day(), // первый день месяца
+        lastDayMonth : this.moment().endOf("month").day(), // последний день месяца
+        dayInMonth : this.moment().endOf("month").format('DD'),
+        day: this.moment().endOf("month").format('DD'),
+        dayInPrevMonth : this.moment("2018/08/07").endOf("month").day(), // последний день месяца
+        obj: {
+          _id: '',
+          event: '',
+          date: '',
+          name: ''
+        }
       }
     },
     methods: {
       current: function(item,i){
 
-        //this.flag = i;
-
-
-        //let date = new Date(year, month)
-            //mounth = date.getMonth();
-        //console.log(el);
-
-        // получить номер дня недели, от 0(пн) до 6(вс)
-        // let totals,
-        //     day = date.getDay();
-        //console.log(day);
-        /*if (day == 0) totals = 7;
-           totals = day + 1;*/
-
-        //console.log(day);
-        //this.isActive = !this.isActive;
+        this.flag = i;
       },
-      currentDay: function(){
 
+      closePopup: function(){
+        this.flag = false
+      },
+
+      cloneObject(obj){
+        return JSON.parse(JSON.stringify(obj))
+      },
+
+      writeDate: function(index){
+        this.flagEdit = false;
+        this.obj._id = index + 1;
+        this.eventsObj.push(this.cloneObject(this.obj));// создание нового события
+
+        //let eventDay =  this.cloneObject(this.obj).event
+        //console.log(eventDay);
+        this.eventDay = this.cloneObject(this.obj).event
+
+        this.obj.event = this.obj.date = this.obj.name = '';// очищение полей
+
+      },
+      openPopup: function(index){
+        console.log(index);
+
+        this.obj.event = '';
+        this.obj.date = '';
+        this.obj.name = '';
+
+        this.flagEdit = true
+        for( let y = 0; y < this.eventsObj.length; y++ ){ // проверка на выбранное событие
+          if( this.eventsObj[y]._id == index){
+            this.obj.event = this.eventsObj[y].event;
+            this.obj.date = this.eventsObj[y].date;
+            this.obj.name = this.eventsObj[y].name;
+
+          }
+        }
+
+
+      },
+      editDate: function(index){
+        for( let y = 0; y < this.eventsObj.length; y++ ) {
+          if (this.eventsObj[y]._id == index) {
+
+            this.eventsObj[y].event = this.obj.event;
+            this.eventsObj[y].date = this.obj.date;
+            this.eventsObj[y].name = this.obj.name;
+
+            this.eventsObj.slice(this.eventsObj[y]._id, this.eventsObj[y]._id+1);
+
+            this.obj.event = '';
+            this.obj.date = '';
+            this.obj.name = '';
+
+          }
+        }
+        this.flagEdit = false
+        //console.log(this.eventsObj.slice(index, index + 1));
       }
     },
     created: function(){
-      /*let startDay = this.D1lastPrev - (this.D1Nfirst - 1),
-          lastDay = this.D1lastPrev + 1;
-      for(let i = startDay; i < lastDay; i++){
-        this.prevMonthDay.push(i)
-      }*/
+
     }
   }
 </script>
@@ -80,8 +136,38 @@
     align-items: center;
     justify-content: center;
     font-size: 50px;
+    position: relative;
+    flex-direction: column;
   }
   .prev-month{
     background-color: #eee;
+  }
+
+  .popup{
+    display: none;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 100%;
+    z-index: 1;
+    background-color: #fff;
+    border: 1px solid #ccc;
+
+  }
+  .close{
+    position: absolute;
+    display: block;
+    height: 15px;
+    width: 15px;
+    right: 5px;
+    top: 5px;
+    border: none;
+    background-color: #333;
+  }
+  .active .popup{
+    display: block;
+  }
+  b{
+    font-size: 16px
   }
 </style>
