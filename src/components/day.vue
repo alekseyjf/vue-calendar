@@ -15,6 +15,7 @@
 
         button( v-if="!flagEdit", @click="writeDate(i)") Готово
         button( v-else, @click="editDate(i)") Редактировать
+    li.calendar__item.next-month(v-for="itemNext in +lastDayMonth") {{itemNext}}
 
     pre {{ eventsObj }}
 </template>
@@ -37,10 +38,10 @@
 
 
         firstDayMonth : this.moment().startOf('month').day(), // первый день месяца
-        lastDayMonth : this.moment().endOf("month").day(), // последний день месяца
         dayInMonth : this.moment().endOf("month").format('DD'),
         day: this.moment().endOf("month").format('DD'),
         dayInPrevMonth : this.moment("2018/08/07").endOf("month").day(), // последний день месяца
+        lastDayMonth: 7 - this.moment().endOf('month').day(),
         obj: {
           _id: '',
           event: '',
