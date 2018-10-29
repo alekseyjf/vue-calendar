@@ -24,7 +24,6 @@
     name: 'app',
     data() {
       return {
-        moment: moment,
         msg: 'Welcome to Your Vue App Alex',
         ms: 'vue-loader',
       }
