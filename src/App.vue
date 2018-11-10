@@ -2,16 +2,13 @@
   #app
     .calendar
       header.calendar__header
-        .active-day
-          .active-day__num 20
-          .active-day__mounth 09
-          .active-day__year 2018
+        .active-day {{day.toDay}}
         form
           input(type="text")
 
       main.calendar__main
         ul.calendar__list
-          day-components
+          day-components(@giveDay="currentDay")
 </template>
 
 <script>
@@ -26,7 +23,12 @@
       return {
         msg: 'Welcome to Your Vue App Alex',
         ms: 'vue-loader',
-
+        day: ''
+      }
+    },
+    methods: {
+      currentDay(date){
+        this.day = date
       }
     },
     comenents: {
