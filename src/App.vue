@@ -2,9 +2,11 @@
   #app
     .calendar
       header.calendar__header
-        .active-day {{day}}
+
         form
           input(type="text")
+        pre &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+        .active-day {{day}}
 
       main.calendar__main
         ul.calendar__list

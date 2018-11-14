@@ -87,10 +87,6 @@
         })
       },
 
-      closePopup: function(){
-        this.flag = false
-      },
-
       cloneObject(obj){
         return JSON.parse(JSON.stringify(obj))
       },
@@ -152,10 +148,10 @@
 
     },
     created: function(){
-      let index = this.months[0].days - this.months[1].dayPrevMonth;
-      console.log(index, this.months[0].days, this.months[1].dayPrevMonth);
-      for(let i = index; i < this.months[0].days; i++){
-        this.months[1].dayPrevMonthArr.push(i)
+      let index = this.months[0].days;
+      let res = this.months[0].days - this.months[1].dayPrevMonth;
+      for(let i = index; i > res; i--){
+        this.months[1].dayPrevMonthArr.unshift(i)
       }
       console.log(this.months[1].dayPrevMonthArr);
     }
@@ -177,7 +173,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 50px;
+    font-size: 40px;
     position: relative;
     flex-direction: column;
     transition: .3s;
