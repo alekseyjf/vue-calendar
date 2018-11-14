@@ -2,29 +2,21 @@
   ul.calendar__list
     li.calendar__item.name-month(v-for="day in dayName") {{day}}
 
-    //li.calendar__item.prev-month(v-for="itemPrev in +firstDayMonth -1") {{itemPrev}}
-    //li.calendar__item( v-for="item, i in +dayInMonth" @click="current(item,i)" :class="{active: flag == i}") {{item}}
+    //b( v-for="itemEvent in eventsObj", v-if="itemEvent._id == i + 1" @click="openPopup(itemEvent._id)" ) {{itemEvent.event}}
+    //.popup
+      button(@click="closePopup()").close
+      input(type="text" v-model="obj.event" placeholder="event")
+      input(type="text" v-model="obj.date" placeholder="date")
+      input(type="text" v-model="obj.name" placeholder="name")
 
-      b( v-for="itemEvent in eventsObj", v-if="itemEvent._id == i + 1" @click="openPopup(itemEvent._id)" ) {{itemEvent.event}}
-
-
-
-      .popup
-        button(@click="closePopup()").close
-        input(type="text" v-model="obj.event" placeholder="event")
-        input(type="text" v-model="obj.date" placeholder="date")
-        input(type="text" v-model="obj.name" placeholder="name")
-
-        button( v-if="!flagEdit", @click="writeDate(i)") Готово
-        button( v-else, @click="editDate(i)") Редактировать
+      button( v-if="!flagEdit", @click="writeDate(i)") Готово
+      button( v-else, @click="editDate(i)") Редактировать
     //li.calendar__item.next-month(v-for="itemNext in +lastDayMonth") {{itemNext}}
 
     template( v-for="itemMonth, i in months" )
-
-
       template( v-if="itemMonth.currentMonth" )
-        li.calendar__item.next-month(v-for="itemPrevDay, j in itemMonth.dayPrevMonth") {{months[0].days - months[1].dayPrevMonth + j + 1}}
-        li.calendar__item( v-for="item in +itemMonth.days" ) {{ item }}
+        li.calendar__item.next-month(v-for="itemPrevDay, j in months[1].dayPrevMonthArr") {{itemPrevDay}}
+        li.calendar__item( v-for="item, k in +itemMonth.days", @click="current(item,k)", :class="{active: flag == k}") {{ item }}
         li.calendar__item.next-month( v-for="itemNextDay in itemMonth.dayNextMonth") {{itemNextDay}}
 
 
@@ -48,7 +40,7 @@
         eventDay: null,
         flagEdit: false,
         dayName: ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],
-
+        toDay: this.moment().format('DD-MM-YY'),
         //prevMonth : this.moment().month() - 1, // первый день месяца
         //lastWeek: this.moment().endOf('week'),
         dayInMonth : this.moment().endOf("month").format('DD'),
@@ -66,18 +58,21 @@
             days: this.moment(this.moment().month(), 'MM').daysInMonth(),
             dayPrevMonth: 7 - this.moment(this.moment().month(), 'MM').startOf('month').day(),
             dayNextMonth: 7 - this.moment(this.moment().month(), 'MM').endOf('month').day(),
+            dayPrevMonthArr: [],
             currentMonth: false
           },
           { month: this.moment().month() + 1,
             days: this.moment(this.moment().month() + 1, 'MM').daysInMonth(),
             dayPrevMonth: 7 - this.moment(this.moment().month() + 1, 'MM').startOf('month').day(),
             dayNextMonth: 7 - this.moment(this.moment().month() + 1, 'MM').endOf('month').day(),
+            dayPrevMonthArr: [],
             currentMonth: true
           },
           { month: this.moment().month() + 2,
             days: this.moment(this.moment().month() + 2, 'MM').daysInMonth(),
             dayPrevMonth: 7 - this.moment(this.moment().month() + 2, 'MM').startOf('month').day(),
             dayNextMonth: 7 - this.moment(this.moment().month() + 2, 'MM').endOf('month').day(),
+            dayPrevMonthArr: [],
             currentMonth: false
           }
         ]
@@ -87,6 +82,9 @@
       current: function(item,i){
 
         this.flag = i;
+        this.$emit('activeDay', {
+          day: this.flag + 1
+        })
       },
 
       closePopup: function(){
@@ -154,7 +152,12 @@
 
     },
     created: function(){
-
+      let index = this.months[0].days - this.months[1].dayPrevMonth;
+      console.log(index, this.months[0].days, this.months[1].dayPrevMonth);
+      for(let i = index; i < this.months[0].days; i++){
+        this.months[1].dayPrevMonthArr.push(i)
+      }
+      console.log(this.months[1].dayPrevMonthArr);
     }
   }
 </script>
@@ -169,7 +172,7 @@
   .calendar__item {
     flex: 0 1 calc(100% / 7);
     width: calc(100% / 7);
-    height: 150px;
+    height: 70px;
     border: 2px solid #aaa;
     display: flex;
     align-items: center;
@@ -177,9 +180,10 @@
     font-size: 50px;
     position: relative;
     flex-direction: column;
+    transition: .3s;
   }
   .calendar__item.active{
-    background-color: #0b0;
+    background-color: #0ff;
   }
   .next-month,
   .prev-month{

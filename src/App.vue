@@ -2,13 +2,13 @@
   #app
     .calendar
       header.calendar__header
-        .active-day {{day.toDay}}
+        .active-day {{day}}
         form
           input(type="text")
 
       main.calendar__main
         ul.calendar__list
-          day-components(@giveDay="currentDay")
+          day-components(@giveDay="currentDay" @activeDay="activeDay")
 </template>
 
 <script>
@@ -28,7 +28,12 @@
     },
     methods: {
       currentDay(date){
-        this.day = date
+        this.day = date.toDay
+      },
+      activeDay(day){
+        console.log(day);
+        this.day = day.day + '-' + this.moment().format('MM-YY');
+        console.log(this.day);
       }
     },
     comenents: {
