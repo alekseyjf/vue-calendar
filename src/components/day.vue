@@ -2,8 +2,8 @@
   ul.calendar__list
     li.calendar__item.name-month(v-for="day in dayName") {{day}}
 
-    li.calendar__item.prev-month(v-for="itemPrev in +firstDayMonth -1") {{itemPrev}}
-    li.calendar__item( v-for="item, i in +dayInMonth" @click="current(item,i)" :class="{active: flag == i}") {{item}}
+    //li.calendar__item.prev-month(v-for="itemPrev in +firstDayMonth -1") {{itemPrev}}
+    //li.calendar__item( v-for="item, i in +dayInMonth" @click="current(item,i)" :class="{active: flag == i}") {{item}}
 
       b( v-for="itemEvent in eventsObj", v-if="itemEvent._id == i + 1" @click="openPopup(itemEvent._id)" ) {{itemEvent.event}}
 
@@ -17,9 +17,18 @@
 
         button( v-if="!flagEdit", @click="writeDate(i)") Готово
         button( v-else, @click="editDate(i)") Редактировать
-    li.calendar__item.next-month(v-for="itemNext in +lastDayMonth") {{itemNext}}
+    //li.calendar__item.next-month(v-for="itemNext in +lastDayMonth") {{itemNext}}
 
-    pre {{ toDay }}
+    template( v-for="itemMonth, i in months" )
+
+
+      template( v-if="itemMonth.currentMonth" )
+        li.calendar__item.next-month(v-for="itemPrevDay, j in itemMonth.dayPrevMonth") {{months[0].days - months[1].dayPrevMonth + j + 1}}
+        li.calendar__item( v-for="item in +itemMonth.days" ) {{ item }}
+        li.calendar__item.next-month( v-for="itemNextDay in itemMonth.dayNextMonth") {{itemNextDay}}
+
+
+    pre {{ months }}
     button(@click="currentDate") date
 </template>
 
@@ -33,17 +42,16 @@
         // moment: moment,
         eventsObj: [],
         flag : null,
-        prevMonth: [],
+        //prevMonth: [],
         prevMonthDay: [],
         isActive: false,
         eventDay: null,
         flagEdit: false,
         dayName: ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],
-        buffer: this.moment().format(),
-        toDay: this.moment().format('DD-MM-YYYY'),
-        firstWeek: this.moment().startOf('week'),
-        firstDayMonth : this.moment().startOf('month').day(), // первый день месяца
-        dayInMonth : this.moment().daysInMonth(),
+
+        //prevMonth : this.moment().month() - 1, // первый день месяца
+        //lastWeek: this.moment().endOf('week'),
+        dayInMonth : this.moment().endOf("month").format('DD'),
         day: this.moment().endOf("month").format('DD'),
         dayInPrevMonth : this.moment("2018/08/07").endOf("month").day(), // последний день месяца
         lastDayMonth: 7 - this.moment().endOf('month').day(),
@@ -52,7 +60,27 @@
           event: '',
           date: '',
           name: ''
-        }
+        },
+        months: [
+          { month: this.moment().month(),
+            days: this.moment(this.moment().month(), 'MM').daysInMonth(),
+            dayPrevMonth: 7 - this.moment(this.moment().month(), 'MM').startOf('month').day(),
+            dayNextMonth: 7 - this.moment(this.moment().month(), 'MM').endOf('month').day(),
+            currentMonth: false
+          },
+          { month: this.moment().month() + 1,
+            days: this.moment(this.moment().month() + 1, 'MM').daysInMonth(),
+            dayPrevMonth: 7 - this.moment(this.moment().month() + 1, 'MM').startOf('month').day(),
+            dayNextMonth: 7 - this.moment(this.moment().month() + 1, 'MM').endOf('month').day(),
+            currentMonth: true
+          },
+          { month: this.moment().month() + 2,
+            days: this.moment(this.moment().month() + 2, 'MM').daysInMonth(),
+            dayPrevMonth: 7 - this.moment(this.moment().month() + 2, 'MM').startOf('month').day(),
+            dayNextMonth: 7 - this.moment(this.moment().month() + 2, 'MM').endOf('month').day(),
+            currentMonth: false
+          }
+        ]
       }
     },
     methods: {
@@ -97,8 +125,6 @@
 
           }
         }
-
-
       },
       editDate: function(index){
         for( let y = 0; y < this.eventsObj.length; y++ ) {
@@ -152,11 +178,10 @@
     position: relative;
     flex-direction: column;
   }
-
   .calendar__item.active{
     background-color: #0b0;
   }
-
+  .next-month,
   .prev-month{
     background-color: #eee;
   }
