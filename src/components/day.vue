@@ -56,23 +56,22 @@
         months: [
           { month: this.moment().month(),
             days: this.moment(this.moment().month(), 'MM').daysInMonth(),
-            dayPrevMonth: 7 - this.moment(this.moment().month(), 'MM').startOf('month').day(),
+            dayPrevMonth: this.moment(this.moment().month(), 'MM').startOf('month').day() -1,
             dayNextMonth: 7 - this.moment(this.moment().month(), 'MM').endOf('month').day(),
-            dayPrevMonthArr: [],
             currentMonth: false
           },
           { month: this.moment().month() + 1,
+            monthName: this.moment().month(this.moment().month()).format('MMMM'),
             days: this.moment(this.moment().month() + 1, 'MM').daysInMonth(),
-            dayPrevMonth: 7 - this.moment(this.moment().month() + 1, 'MM').startOf('month').day(),
+            dayPrevMonth: this.moment(this.moment().month() + 1, 'MM').startOf('month').day() - 1,
             dayNextMonth: 7 - this.moment(this.moment().month() + 1, 'MM').endOf('month').day(),
-            dayPrevMonthArr: [],
-            currentMonth: true
+            currentMonth: true,
+            dayPrevMonthArr: []
           },
           { month: this.moment().month() + 2,
             days: this.moment(this.moment().month() + 2, 'MM').daysInMonth(),
-            dayPrevMonth: 7 - this.moment(this.moment().month() + 2, 'MM').startOf('month').day(),
+            dayPrevMonth: this.moment(this.moment().month() + 2, 'MM').startOf('month').day() - 1,
             dayNextMonth: 7 - this.moment(this.moment().month() + 2, 'MM').endOf('month').day(),
-            dayPrevMonthArr: [],
             currentMonth: false
           }
         ]
@@ -141,6 +140,7 @@
       },
 
       currentDate(){
+        this.flag = this.toDay.split('-')[0] - 1;
         this.$emit('giveDay', {
           toDay: this.toDay
         })

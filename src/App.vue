@@ -5,8 +5,13 @@
 
         form
           input(type="text")
-        pre &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+        pre &nbsp; &nbsp; &nbsp;
+        button(@click="prevMonth").btn.btn-prev prev
+        p {{month}}
+        button.btn.btn-next next
+        pre &nbsp; &nbsp; &nbsp;
         .active-day {{day}}
+
 
       main.calendar__main
         ul.calendar__list
@@ -25,7 +30,8 @@
       return {
         msg: 'Welcome to Your Vue App Alex',
         ms: 'vue-loader',
-        day: ''
+        day: '',
+        month: this.moment().format('MMMM')
       }
     },
     methods: {
@@ -36,6 +42,9 @@
         console.log(day);
         this.day = day.day + '-' + this.moment().format('MM-YY');
         console.log(this.day);
+      },
+      prevMonth(){
+        console.log(1);
       }
     },
     comenents: {
@@ -60,28 +69,17 @@
     box-sizing: border-box;
   }
 
+  .btn{
+    margin: 0 8px;
+  }
+
   .calendar__header {
     display: flex;
+    align-items: center;
   }
 
   .active-day {
     display: flex;
   }
 
-  .active-day__num,
-  .active-day__mounth,
-  .active-day__year {
-    display: flex;
-    font-size: 16px;
-    text-align: left;
-  }
-
-  .active-day__num,
-  .active-day__mounth {
-    width: 25px;
-  }
-
-  .active-day__year {
-    width: 40px;
-  }
 </style>
