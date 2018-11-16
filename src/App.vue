@@ -1,30 +1,21 @@
 <template lang="pug">
   #app
-    .calendar
-      header.calendar__header
-
-        form
-          input(type="text")
-        pre &nbsp; &nbsp; &nbsp;
-        button(@click="prevMonth").btn.btn-prev prev
-        p {{month}}
-        button.btn.btn-next next
-        pre &nbsp; &nbsp; &nbsp;
-        .active-day {{day}}
+    calendar-component
+      //header.calendar__header
 
 
-      main.calendar__main
-        ul.calendar__list
-          day-components(@giveDay="currentDay" @activeDay="activeDay")
+
+
+      //main.calendar__main
+        day-component(@giveDay="currentDay" @activeDay="activeDay")
 </template>
 
 <script>
-  import DayComponents from './components/day'
+  import calendarComponent from './components/calendar';
+  import dayComponent from './components/day'
 
   export default {
-    components: {
-      'day-components': DayComponents
-    },
+
     name: 'app',
     data() {
       return {
@@ -35,22 +26,16 @@
       }
     },
     methods: {
-      currentDay(date){
+      /*currentDay(date){
         this.day = date.toDay
-      },
-      activeDay(day){
-        console.log(day);
-        this.day = day.day + '-' + this.moment().format('MM-YY');
-        console.log(this.day);
       },
       prevMonth(){
         console.log(1);
-      }
+      }*/
     },
-    comenents: {
-      day: {
-        tamplate: '#day'
-      }
+    components: {
+      'day-component': dayComponent,
+      'calendar-component': calendarComponent
     }
   }
 </script>
