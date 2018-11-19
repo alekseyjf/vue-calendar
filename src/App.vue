@@ -1,45 +1,41 @@
 <template lang="pug">
   #app
-    .calendar
-      header.calendar__header
-        .active-day {{day}}
-        form
-          input(type="text")
+    calendar-component
+      //header.calendar__header
 
-      main.calendar__main
-        ul.calendar__list
-          day-components(@giveDay="currentDay" @activeDay="activeDay")
+
+
+
+      //main.calendar__main
+        day-component(@giveDay="currentDay" @activeDay="activeDay")
 </template>
 
 <script>
-  import DayComponents from './components/day'
+  import calendarComponent from './components/calendar';
+  import dayComponent from './components/day'
 
   export default {
-    components: {
-      'day-components': DayComponents
-    },
+
     name: 'app',
     data() {
       return {
         msg: 'Welcome to Your Vue App Alex',
         ms: 'vue-loader',
-        day: ''
+        day: '',
+        month: this.moment().format('MMMM')
       }
     },
     methods: {
-      currentDay(date){
+      /*currentDay(date){
         this.day = date.toDay
       },
-      activeDay(day){
-        console.log(day);
-        this.day = day.day + '-' + this.moment().format('MM-YY');
-        console.log(this.day);
-      }
+      prevMonth(){
+        console.log(1);
+      }*/
     },
-    comenents: {
-      day: {
-        tamplate: '#day'
-      }
+    components: {
+      'day-component': dayComponent,
+      'calendar-component': calendarComponent
     }
   }
 </script>
@@ -58,28 +54,17 @@
     box-sizing: border-box;
   }
 
+  .btn{
+    margin: 0 8px;
+  }
+
   .calendar__header {
     display: flex;
+    align-items: center;
   }
 
   .active-day {
     display: flex;
   }
 
-  .active-day__num,
-  .active-day__mounth,
-  .active-day__year {
-    display: flex;
-    font-size: 16px;
-    text-align: left;
-  }
-
-  .active-day__num,
-  .active-day__mounth {
-    width: 25px;
-  }
-
-  .active-day__year {
-    width: 40px;
-  }
 </style>
