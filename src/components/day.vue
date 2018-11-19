@@ -6,10 +6,10 @@
     //li.calendar__item.next-month(v-for="itemNext in +lastDayMonth") {{itemNext}}
 
     template( v-for="itemMonth, i in months" )
-      template( v-if="itemMonth.currentMonth" )
-        li.calendar__item.next-month(v-for="itemPrevDay, j in months[1].dayPrevMonthArr") {{itemPrevDay}}
+      template( v-if="itemMonth.month == curMonth" )
+        li.calendar__item.next-month(v-for="itemPrevDay, j in months[0].dayPrevMonth")
         li.calendar__item( v-for="item, k in +itemMonth.days", @click="current(item,k)", :class="{active: flag == k}") {{ item }}
-        li.calendar__item.next-month( v-for="itemNextDay in itemMonth.dayNextMonth") {{itemNextDay}}
+        li.calendar__item.next-month( v-for="itemNextDay in itemMonth.dayNextMonth")
 
 
     pre {{ months }}
@@ -45,16 +45,21 @@
         this.$emit('getActiveDay', {
           day: this.flag + 1
         })
+
+        let _id = this.flag + 1 + '-' + this.curMonth + '-' + this.moment().format('YYYY');
+
+        console.log(_id);
+
       },
 
     },
     created: function(){
-      let index = this.months[0].days,
+      /*let index = this.months[0].days,
         res = this.months[0].days - this.months[1].dayPrevMonth;
 
       for(let i = index; i > res; i--){
         this.months[1].dayPrevMonthArr.unshift(i)
-      }
+      }*/
     }
   }
 </script>
