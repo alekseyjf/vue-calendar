@@ -70,6 +70,21 @@
       },
       currentDate(){
         this.currentDay= this.moment().format('DD-MM-YY');
+        this.currentMonth= this.moment().month() + 1;
+
+
+        this.months[0].month = this.currentMonth;
+        this.months[0].monthName= this.moment().month(this.currentMonth - 1).format('MMMM');
+        this.months[0].days = this.moment(this.currentMonth, 'MM').daysInMonth();
+        this.months[0].dayPrevMonth = this.moment(this.currentMonth, 'MM').startOf('month').day() - 1 == -1 ? 6 : this.moment(this.currentMonth, 'MM').startOf('month').day() - 1;
+        this.months[0].dayNextMonth = 7 - this.moment(this.currentMonth, 'MM').endOf('month').day() == 7 ? 0 : 7 - this.moment(this.currentMonth, 'MM').endOf('month').day();
+
+        this.month = this.moment().month(this.currentMonth - 1).format('MMMM');
+
+        this.$emit('getCurrentMonth', {
+          retCurMonth: this.currentMonth
+        });
+
         this.$emit('getCurrentDay', {
           returnCurrentDay: this.currentDay
         })
