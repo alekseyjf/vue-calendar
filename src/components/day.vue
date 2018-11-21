@@ -9,10 +9,10 @@
       template( v-for="itemMonth, i in months" )
         template( v-if="itemMonth.month == curMonth" )
           li.calendar__item.next-month(v-for="itemPrevDay, j in months[0].dayPrevMonth")
-          li.calendar__item( v-for="item, k in +itemMonth.days", @click="current(item,k, $event)", :class="{active: flag == k}") {{ item }}
-            button.calendar__event(v-for="itemEvent in eventsDate", v-if="itemEvent.date.split('-')[0] - 1 == k && itemEvent.date.split('-')[1] == curMonth" @click.stop="editEvent(itemEvent)") {{itemEvent.name}}
+          li.calendar__item( v-for="item, index in +itemMonth.days", @click="current(item,index, $event)", :class="{active: flag == index}") {{ item }}
+            button.calendar__event(v-for="itemEvent in eventsDate", v-if="itemEvent.date.split('-')[0] - 1 == index && itemEvent.date.split('-')[1] == curMonth" @click.stop="editEvent(itemEvent)") {{itemEvent.name}}
           li.calendar__item.next-month( v-for="itemNextDay in itemMonth.dayNextMonth")
-    popup-component(:rect="rect", :objEdit="objEdit", :editData="editData", @objEvents="events")
+    popup-component(v-if="openPopup", :rect="rect", :objEdit="objEdit", :editData="editData", @objEvents="events")
 
     pre {{ eventsDate }}
 
@@ -33,7 +33,8 @@
         curMonth: this.moment().month() + 1,
         eventsDate: [],
         editData: null,
-        objEdit: null
+        objEdit: null,
+        openPopup: false
       }
     },
     props: ['months', 'getActiveDay', 'month'],
@@ -48,7 +49,7 @@
     },
     methods: {
       current: function(item,i,event){
-
+        this.openPopup= true;
         this.flag = i;
         this.$emit('getActiveDay', {
           day: this.flag + 1
@@ -62,16 +63,17 @@
           _id: _id,
           left: event.clientX - geRect.left,
           top: event.clientY - geRect.top,
-        }
-        this.editData= false;
+        };
+        this.editData= false;// переключение кнопки редактирования в попапе
       },
       events(val){
         this.eventsDate= val.retObjEvents;
       },
       editEvent(val){
-        this.editData= true;
+        this.openPopup= true;
+        this.editData= true;// переключение кнопки редактирования в попапе
         this.objEdit = val;
-        console.log(this.objEdit,1);
+
       }
 
     },

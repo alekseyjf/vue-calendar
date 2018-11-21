@@ -1,5 +1,5 @@
 <template lang="pug">
-  .popup(v-show="flagActive" :style="{top: getRect.top + 'px', left: getRect.left + 'px'}")
+  .popup(:style="{top: getRect.top + 'px', left: getRect.left + 'px'}")
     button(@click="closePopup").close
     input(type="text" v-model="obj.event" placeholder="event")
     input(type="text" v-model="obj.date" placeholder="date" readonly)
@@ -20,21 +20,21 @@
           name: ''
         },
         getRect: {},
-        flagActive: false,
         eventsObj: [],
         edit: false
       }
     },
     props: ['rect', 'editData', 'objEdit'],
-    watch: {
+    beforeMount() {
+      console.log('rect', this.rect);
+    },
+    /*watch: {
       'rect': function(val){
         this.getRect = val;
-        this.flagActive = true;
         this.obj.date = this.getRect.date;
       },
       'editData': function(edit){
         this.edit = edit;
-        this.flagActive = true;
         console.log(this.edit);
       },
       'objEdit': function (obj) {
@@ -43,15 +43,18 @@
         this.obj.event = obj.event;
         this.obj.name = obj.name;
       }
+    },*/
+    mounted: function() {
+      // this.$emit('название' [, данные]);
+      this.getRect = this.rect;
     },
     methods: {
       cloneObject(obj){
         return JSON.parse(JSON.stringify(obj))
       },
       closePopup(){
-        this.flagActive=false;
         this.edit= false;
-        this.obj.event = this.obj.date = this.obj.name = '';
+        this.obj._id = this.obj.event = this.obj.date = this.obj.name = '';
       },
       writeDate(){
         this.obj._id = this.getRect._id;
@@ -68,13 +71,12 @@
       editDate: function(){
         console.log(this.edit);
         for( let i=0; i < this.eventsObj.length; i++){
-          if( this.eventsObj[i]._id == this.obj._id){
+          if(this.eventsObj[i]._id == this.obj._id){
             this.eventsObj[i].date = this.obj.date;
             this.eventsObj[i].event = this.obj.event;
             this.eventsObj[i].name = this.obj.name;
           }
         }
-        this.flagActive=false;
         this.obj._id = this.obj.event = this.obj.date = this.obj.name = '';// очищение полей
 
       },
