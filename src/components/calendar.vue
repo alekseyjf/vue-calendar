@@ -1,6 +1,6 @@
 
 <template lang="pug">
-  .calendar
+  main.main
     header-component(:months="months" :toDay="day" @getCurrentDay="currentDay" @getCurrentMonth="currentMonth")
     day-component(:months="months" :month="thisMonth" :getActiveDay="day" @getActiveDay="activeDay")
 </template>

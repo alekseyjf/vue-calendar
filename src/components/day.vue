@@ -1,18 +1,19 @@
 <template lang="pug">
-  ul.calendar__list
-    li.calendar__item.name-month(v-for="day in dayName") {{day}}
+  .calendar
+    ul.calendar__list
+      li.calendar__item.name-month(v-for="day in dayName") {{day}}
 
-    //b( v-for="itemEvent in eventsObj", v-if="itemEvent._id == i + 1" @click="openPopup(itemEvent._id)" ) {{itemEvent.event}}
-    //li.calendar__item.next-month(v-for="itemNext in +lastDayMonth") {{itemNext}}
+      //b( v-for="itemEvent in eventsObj", v-if="itemEvent._id == i + 1" @click="openPopup(itemEvent._id)" ) {{itemEvent.event}}
+      //li.calendar__item.next-month(v-for="itemNext in +lastDayMonth") {{itemNext}}
 
-    template( v-for="itemMonth, i in months" )
-      template( v-if="itemMonth.month == curMonth" )
-        li.calendar__item.next-month(v-for="itemPrevDay, j in months[0].dayPrevMonth")
-        li.calendar__item( v-for="item, k in +itemMonth.days", @click="current(item,k)", :class="{active: flag == k}") {{ item }}
-        li.calendar__item.next-month( v-for="itemNextDay in itemMonth.dayNextMonth")
+      template( v-for="itemMonth, i in months" )
+        template( v-if="itemMonth.month == curMonth" )
+          li.calendar__item.next-month(v-for="itemPrevDay, j in months[0].dayPrevMonth")
+          li.calendar__item( v-for="item, k in +itemMonth.days", @click="current(item,k, $event)", :class="{active: flag == k}") {{ item }}
+          li.calendar__item.next-month( v-for="itemNextDay in itemMonth.dayNextMonth")
+    popup-component(:rect="rect",@objEvents="events")
 
-
-    pre {{ months }}
+    pre {{ eventsDate }}
 
 </template>
 
@@ -20,12 +21,16 @@
 
   //import moment from 'moment'
 
+  import PopupComponent from "./popup";
   export default {
+    components: {PopupComponent},
     data() {
       return {
+        rect: {},
         flag : null,
         dayName: ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],
         curMonth: this.moment().month() + 1,
+        eventsDate: []
       }
     },
     props: ['months', 'getActiveDay', 'month'],
@@ -39,18 +44,27 @@
       }
     },
     methods: {
-      current: function(item,i){
+      current: function(item,i,event){
 
         this.flag = i;
         this.$emit('getActiveDay', {
           day: this.flag + 1
-        })
+        });
 
         let _id = this.flag + 1 + '-' + this.curMonth + '-' + this.moment().format('YYYY');
-
-        console.log(_id);
+        let geRect = document.querySelector('.calendar').getBoundingClientRect();
+        this.rect = {
+          _id: _id,
+          left: event.clientX - geRect.left,
+          top: event.clientY - geRect.top,
+        }
+        console.log(event.clientX - geRect.left,'x',event.clientY - geRect.top,'y');
 
       },
+      events(val){
+        this.eventsDate= val.retObjEvents;
+        console.log(this.eventsDate);
+      }
 
     },
     created: function(){
@@ -64,6 +78,9 @@
   }
 </script>
 <style>
+  .calendar{
+    position: relative;
+  }
   .calendar__list {
     display: flex;
     flex-wrap: wrap;
