@@ -10,8 +10,9 @@
         template( v-if="itemMonth.month == curMonth" )
           li.calendar__item.next-month(v-for="itemPrevDay, j in months[0].dayPrevMonth")
           li.calendar__item( v-for="item, k in +itemMonth.days", @click="current(item,k, $event)", :class="{active: flag == k}") {{ item }}
+            button.calendar__event(v-for="itemEvent in eventsDate", v-if="itemEvent.date.split('-')[0] - 1 == k && itemEvent.date.split('-')[1] == curMonth" @click.stop="editEvent(itemEvent)") {{itemEvent.name}}
           li.calendar__item.next-month( v-for="itemNextDay in itemMonth.dayNextMonth")
-    popup-component(:rect="rect",@objEvents="events")
+    popup-component(:rect="rect", :objEdit="objEdit", :editData="editData", @objEvents="events")
 
     pre {{ eventsDate }}
 
@@ -30,7 +31,9 @@
         flag : null,
         dayName: ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],
         curMonth: this.moment().month() + 1,
-        eventsDate: []
+        eventsDate: [],
+        editData: null,
+        objEdit: null
       }
     },
     props: ['months', 'getActiveDay', 'month'],
@@ -51,19 +54,24 @@
           day: this.flag + 1
         });
 
-        let _id = this.flag + 1 + '-' + this.curMonth + '-' + this.moment().format('YYYY');
-        let geRect = document.querySelector('.calendar').getBoundingClientRect();
+        let date = this.flag + 1 + '-' + this.curMonth + '-' + this.moment().format('YYYY'),
+            _id = this.moment().unix(),
+            geRect = document.querySelector('.calendar').getBoundingClientRect();
         this.rect = {
+          date: date,
           _id: _id,
           left: event.clientX - geRect.left,
           top: event.clientY - geRect.top,
         }
-        console.log(event.clientX - geRect.left,'x',event.clientY - geRect.top,'y');
-
+        this.editData= false;
       },
       events(val){
         this.eventsDate= val.retObjEvents;
-        console.log(this.eventsDate);
+      },
+      editEvent(val){
+        this.editData= true;
+        this.objEdit = val;
+        console.log(this.objEdit,1);
       }
 
     },

@@ -2,11 +2,11 @@
   .popup(v-show="flagActive" :style="{top: getRect.top + 'px', left: getRect.left + 'px'}")
     button(@click="closePopup").close
     input(type="text" v-model="obj.event" placeholder="event")
-    input(type="text" v-model="obj.date" placeholder="date")
+    input(type="text" v-model="obj.date" placeholder="date" readonly)
     input(type="text" v-model="obj.name" placeholder="name")
 
-    button(@click="writeDate") Готово
-    button() Редактировать
+    button(v-if="!edit", @click="writeDate") Готово
+    button(v-else, @click="editDate") Редактировать
 </template>
 <script>
   export default {
@@ -21,15 +21,27 @@
         },
         getRect: {},
         flagActive: false,
-        eventsObj: []
+        eventsObj: [],
+        edit: false
       }
     },
-    props: ['rect'],
+    props: ['rect', 'editData', 'objEdit'],
     watch: {
       'rect': function(val){
-        console.log(val);
         this.getRect = val;
-        this.flagActive = true
+        this.flagActive = true;
+        this.obj.date = this.getRect.date;
+      },
+      'editData': function(edit){
+        this.edit = edit;
+        this.flagActive = true;
+        console.log(this.edit);
+      },
+      'objEdit': function (obj) {
+        this.obj._id = obj._id;
+        this.obj.date = obj.date;
+        this.obj.event = obj.event;
+        this.obj.name = obj.name;
       }
     },
     methods: {
@@ -38,14 +50,13 @@
       },
       closePopup(){
         this.flagActive=false;
+        this.edit= false;
         this.obj.event = this.obj.date = this.obj.name = '';
       },
       writeDate(){
         this.obj._id = this.getRect._id;
         this.eventsObj.push(this.cloneObject(this.obj));// создание нового события
 
-        //let eventDay =  this.cloneObject(this.obj).event
-        //console.log(eventDay);
         this.eventDay = this.cloneObject(this.obj).event
 
         this.flagActive=false;
@@ -54,41 +65,18 @@
           retObjEvents: this.eventsObj
         });
       },
-      openPopup: function(index){
-        console.log(index);
-
-        this.obj.event = '';
-        this.obj.date = '';
-        this.obj.name = '';
-
-        this.flagEdit = true
-        for( let y = 0; y < this.eventsObj.length; y++ ){ // проверка на выбранное событие
-          if( this.eventsObj[y]._id == index){
-            this.obj.event = this.eventsObj[y].event;
-            this.obj.date = this.eventsObj[y].date;
-            this.obj.name = this.eventsObj[y].name;
-
+      editDate: function(){
+        console.log(this.edit);
+        for( let i=0; i < this.eventsObj.length; i++){
+          if( this.eventsObj[i]._id == this.obj._id){
+            this.eventsObj[i].date = this.obj.date;
+            this.eventsObj[i].event = this.obj.event;
+            this.eventsObj[i].name = this.obj.name;
           }
         }
-      },
-      editDate: function(index){
-        for( let y = 0; y < this.eventsObj.length; y++ ) {
-          if (this.eventsObj[y]._id == index) {
+        this.flagActive=false;
+        this.obj._id = this.obj.event = this.obj.date = this.obj.name = '';// очищение полей
 
-            this.eventsObj[y].event = this.obj.event;
-            this.eventsObj[y].date = this.obj.date;
-            this.eventsObj[y].name = this.obj.name;
-
-            this.eventsObj.slice(this.eventsObj[y]._id, this.eventsObj[y]._id+1);
-
-            this.obj.event = '';
-            this.obj.date = '';
-            this.obj.name = '';
-
-          }
-        }
-        this.flagEdit = false
-        //console.log(this.eventsObj.slice(index, index + 1));
       },
     }
   }
