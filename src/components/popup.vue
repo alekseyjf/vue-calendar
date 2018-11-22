@@ -24,10 +24,16 @@
         edit: false
       }
     },
-    props: ['rect', 'editData', 'objEdit'],
-    beforeMount() {
-      console.log('rect', this.rect);
+    props:{
+      rect: {
+        type: Object, // это обеспечивает проверку, что свойство max будет типа Number
+        default(val) { return val; },
+      },
     },
+        /*[
+
+        'rect', 'editData', 'objEdit'],*/
+
     /*watch: {
       'rect': function(val){
         this.getRect = val;
@@ -47,6 +53,7 @@
     mounted: function() {
       // this.$emit('название' [, данные]);
       this.getRect = this.rect;
+      console.log(this.getRect, 'this.getRect');
     },
     methods: {
       cloneObject(obj){

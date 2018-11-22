@@ -49,7 +49,13 @@
     },
     methods: {
       current: function(item,i,event){
+        console.log(this.openPopup);
+        if(this.openPopup == true) {
+          this.openPopup= false;
+        }
+        console.log(this.openPopup);
         this.openPopup= true;
+        console.log(this.openPopup);
         this.flag = i;
         this.$emit('getActiveDay', {
           day: this.flag + 1
