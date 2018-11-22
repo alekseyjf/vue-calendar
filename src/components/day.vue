@@ -10,7 +10,7 @@
         template( v-if="itemMonth.month == curMonth" )
           li.calendar__item.next-month(v-for="itemPrevDay, j in months[0].dayPrevMonth")
           li.calendar__item( v-for="item, index in +itemMonth.days", @click="current(item,index, $event)", :class="{active: flag == index}") {{ item }}
-            button.calendar__event(v-for="itemEvent in eventsDate", v-if="itemEvent.date.split('-')[0] - 1 == index && itemEvent.date.split('-')[1] == curMonth" @click.stop="editEvent(itemEvent)") {{itemEvent.name}}
+            //button.calendar__event(v-for="itemEvent in eventsDate", v-if="itemEvent.date.split('-')[0] - 1 == index && itemEvent.date.split('-')[1] == curMonth" @click.stop="editEvent(itemEvent)") {{itemEvent.name}}
           li.calendar__item.next-month( v-for="itemNextDay in itemMonth.dayNextMonth")
     popup-component(v-if="openPopup", :rect="rect", :objEdit="objEdit", :editData="editData", @objEvents="events")
 
@@ -37,48 +37,53 @@
         openPopup: false
       }
     },
-    props: ['months', 'getActiveDay', 'month'],
+    props:{
+      months: Array,
+      getActiveDay: String,
+      month: Number,
+    },
     watch: {
       'getActiveDay': function (val) {
         this.flag = val.split('-')[0] - 1
       },
       'month': function (val) {
-        console.log(val);
+        //console.log(val, 'month watch day');
         this.curMonth = val
       }
     },
     methods: {
       current: function(item,i,event){
-        console.log(this.openPopup);
-        if(this.openPopup == true) {
-          this.openPopup= false;
-        }
-        console.log(this.openPopup);
-        this.openPopup= true;
-        console.log(this.openPopup);
-        this.flag = i;
-        this.$emit('getActiveDay', {
-          day: this.flag + 1
-        });
 
-        let date = this.flag + 1 + '-' + this.curMonth + '-' + this.moment().format('YYYY'),
+        /* работа с датами*/
+        this.flag = i;
+        /* передача данніх положения мішки на єкране в момент клика */
+        let date = this.flag + 1 + '-' + this.curMonth + '-' + this.moment().format('YY'),
             _id = this.moment().unix(),
             geRect = document.querySelector('.calendar').getBoundingClientRect();
+
+        this.$emit('getActiveDay', {
+          day: date
+        });
+
+        /* работа с датами*/
+
+        /* передача расположения мышки в момент клика */
         this.rect = {
           date: date,
           _id: _id,
           left: event.clientX - geRect.left,
           top: event.clientY - geRect.top,
         };
-        this.editData= false;// переключение кнопки редактирования в попапе
+        /* передача расположения мышки в момент клика */
+
+        //this.editData= false;// переключение кнопки редактирования в попапе
       },
       events(val){
         this.eventsDate= val.retObjEvents;
       },
       editEvent(val){
-        this.openPopup= true;
-        this.editData= true;// переключение кнопки редактирования в попапе
-        this.objEdit = val;
+        // this.editData= true;// переключение кнопки редактирования в попапе
+        // this.objEdit = val;
 
       }
 

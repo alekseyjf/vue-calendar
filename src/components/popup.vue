@@ -25,10 +25,7 @@
       }
     },
     props:{
-      rect: {
-        type: Object, // это обеспечивает проверку, что свойство max будет типа Number
-        default(val) { return val; },
-      },
+      rect: Object, // это обеспечивает проверку, что свойство rect будет типа Object
     },
         /*[
 
@@ -64,27 +61,27 @@
         this.obj._id = this.obj.event = this.obj.date = this.obj.name = '';
       },
       writeDate(){
-        this.obj._id = this.getRect._id;
-        this.eventsObj.push(this.cloneObject(this.obj));// создание нового события
+        // this.obj._id = this.getRect._id;
+        // this.eventsObj.push(this.cloneObject(this.obj));// создание нового события
 
-        this.eventDay = this.cloneObject(this.obj).event
+        //this.eventDay = this.cloneObject(this.obj).event
 
-        this.flagActive=false;
-        this.obj._id = this.obj.event = this.obj.date = this.obj.name = '';// очищение полей
-        this.$emit('objEvents', {
-          retObjEvents: this.eventsObj
-        });
+        //this.flagActive=false;
+        // this.obj._id = this.obj.event = this.obj.date = this.obj.name = '';// очищение полей
+        // this.$emit('objEvents', {
+        //   retObjEvents: this.eventsObj
+        // });
       },
       editDate: function(){
         console.log(this.edit);
-        for( let i=0; i < this.eventsObj.length; i++){
-          if(this.eventsObj[i]._id == this.obj._id){
-            this.eventsObj[i].date = this.obj.date;
-            this.eventsObj[i].event = this.obj.event;
-            this.eventsObj[i].name = this.obj.name;
-          }
-        }
-        this.obj._id = this.obj.event = this.obj.date = this.obj.name = '';// очищение полей
+        // for( let i=0; i < this.eventsObj.length; i++){
+        //   if(this.eventsObj[i]._id == this.obj._id){
+        //     this.eventsObj[i].date = this.obj.date;
+        //     this.eventsObj[i].event = this.obj.event;
+        //     this.eventsObj[i].name = this.obj.name;
+        //   }
+        // }
+        // this.obj._id = this.obj.event = this.obj.date = this.obj.name = '';// очищение полей
 
       },
     }

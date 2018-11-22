@@ -13,7 +13,7 @@
     data() {
       return {
         day: '',
-        thisMonth: '',
+        thisMonth: null,
         toDay: this.moment().format('DD-MM-YY'),
         months: [
           /*{ month: this.moment().month(),
@@ -36,14 +36,17 @@
       }
     },
     methods: {
-      activeDay(day){
-        this.day = day.day + '-' + this.moment().format('MM-YY');
+      activeDay(day){ // get active day
+        this.day = day.day;
+        // console.log(this.day, 'active this.day calendar');
       },
-      currentDay(day){
-        this.day = day.returnCurrentDay
+      currentDay(day){// current day
+        this.day = day.returnCurrentDay;
+        // console.log(this.day, 'current this.day calendar');
       },
       currentMonth(month){
         this.thisMonth = month.retCurMonth;
+        // console.log(this.thisMonth, 'this.thisMonth calendar');
       }
     },
     components: {
