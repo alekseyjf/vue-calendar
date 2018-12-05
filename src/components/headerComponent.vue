@@ -23,7 +23,7 @@
     },
     props: {
       toDay: String,
-      months: Array,
+      monthView: Object,
     },
     watch: {
       'toDay' : function (val) {
@@ -46,11 +46,11 @@
           /* передача выбраного месяца */
         });
         /* запись в объект */
-        this.months[0].month -= 1;
-        this.months[0].monthName= this.moment().month(this.currentMonth - 1).format('MMMM');
-        this.months[0].days = this.moment(this.currentMonth, 'MM').daysInMonth();
-        this.months[0].dayPrevMonth = this.moment(this.currentMonth, 'MM').startOf('month').day() - 1 == -1 ? 6 : this.moment(this.currentMonth, 'MM').startOf('month').day() - 1;
-        this.months[0].dayNextMonth = 7 - this.moment(this.currentMonth, 'MM').endOf('month').day() == 7 ? 0 : 7 - this.moment(this.currentMonth, 'MM').endOf('month').day();
+        this.monthView.month -= 1;
+        this.monthView.monthName= this.moment().month(this.currentMonth - 1).format('MMMM');
+        this.monthView.days = this.moment(this.currentMonth, 'MM').daysInMonth();
+        this.monthView.dayPrevMonth = this.moment(this.currentMonth, 'MM').startOf('month').day() - 1 == -1 ? 6 : this.moment(this.currentMonth, 'MM').startOf('month').day() - 1;
+        this.monthView.dayNextMonth = 7 - this.moment(this.currentMonth, 'MM').endOf('month').day() == 7 ? 0 : 7 - this.moment(this.currentMonth, 'MM').endOf('month').day();
         /* запись в объект */
 
         /* получение месяца из полной даты*/
@@ -71,11 +71,11 @@
           /* передача выбраного месяца */
         });
         /* запись в объект */
-        this.months[0].month += 1;
-        this.months[0].days = this.moment(this.currentMonth, 'MM').daysInMonth();
-        this.months[0].monthName= this.moment().month(this.currentMonth - 1).format('MMMM');
-        this.months[0].dayPrevMonth = this.moment(this.currentMonth, 'MM').startOf('month').day() - 1 == -1 ? 6 : this.moment(this.currentMonth, 'MM').startOf('month').day() - 1;
-        this.months[0].dayNextMonth = 7 - this.moment(this.currentMonth, 'MM').endOf('month').day() == 7 ? 0 : 7 - this.moment(this.currentMonth, 'MM').endOf('month').day();
+        this.monthView.month += 1;
+        this.monthView.days = this.moment(this.currentMonth, 'MM').daysInMonth();
+        this.monthView.monthName= this.moment().month(this.currentMonth - 1).format('MMMM');
+        this.monthView.dayPrevMonth = this.moment(this.currentMonth, 'MM').startOf('month').day() - 1 == -1 ? 6 : this.moment(this.currentMonth, 'MM').startOf('month').day() - 1;
+        this.monthView.dayNextMonth = 7 - this.moment(this.currentMonth, 'MM').endOf('month').day() == 7 ? 0 : 7 - this.moment(this.currentMonth, 'MM').endOf('month').day();
         /* запись в объект */
 
         /* получение месяца из полной даты*/
@@ -91,11 +91,11 @@
         /* получение текущей даты */
 
         /* запись в объект */
-        this.months[0].month = this.currentMonth;
-        this.months[0].monthName= this.moment().month(this.currentMonth - 1).format('MMMM');
-        this.months[0].days = this.moment(this.currentMonth, 'MM').daysInMonth();
-        this.months[0].dayPrevMonth = this.moment(this.currentMonth, 'MM').startOf('month').day() - 1 == -1 ? 6 : this.moment(this.currentMonth, 'MM').startOf('month').day() - 1;
-        this.months[0].dayNextMonth = 7 - this.moment(this.currentMonth, 'MM').endOf('month').day() == 7 ? 0 : 7 - this.moment(this.currentMonth, 'MM').endOf('month').day();
+        this.monthView.month = this.currentMonth;
+        this.monthView.monthName= this.moment().month(this.currentMonth - 1).format('MMMM');
+        this.monthView.days = this.moment(this.currentMonth, 'MM').daysInMonth();
+        this.monthView.dayPrevMonth = this.moment(this.currentMonth, 'MM').startOf('month').day() - 1 == -1 ? 6 : this.moment(this.currentMonth, 'MM').startOf('month').day() - 1;
+        this.monthView.dayNextMonth = 7 - this.moment(this.currentMonth, 'MM').endOf('month').day() == 7 ? 0 : 7 - this.moment(this.currentMonth, 'MM').endOf('month').day();
         /* запись в объект */
 
         /* вывод полного названия текущего месяца календаря */

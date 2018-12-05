@@ -3,18 +3,12 @@
     ul.calendar__list
       li.calendar__item.name-month(v-for="day in dayName") {{day}}
 
-      //b( v-for="itemEvent in eventsObj", v-if="itemEvent._id == i + 1" @click="openPopup(itemEvent._id)" ) {{itemEvent.event}}
-      //li.calendar__item.next-month(v-for="itemNext in +lastDayMonth") {{itemNext}}
+      li.calendar__item.next-month(v-for="itemPrevDay, j in monthView.dayPrevMonth")
+      li.calendar__item( v-for="item, index in +monthView.days", @click="current(item,index, $event)", :class="{active: flag == index}") {{ item }}
+      li.calendar__item.next-month( v-for="itemNextDay in monthView.dayNextMonth")
+    //popup-component(v-if="openPopup", :rect="rect", :objEdit="objEdit", :editData="editData", @objEvents="events")
 
-      template( v-for="itemMonth, i in months" )
-        template( v-if="itemMonth.month == curMonth" )
-          li.calendar__item.next-month(v-for="itemPrevDay, j in months[0].dayPrevMonth")
-          li.calendar__item( v-for="item, index in +itemMonth.days", @click="current(item,index, $event)", :class="{active: flag == index}") {{ item }}
-            //button.calendar__event(v-for="itemEvent in eventsDate", v-if="itemEvent.date.split('-')[0] - 1 == index && itemEvent.date.split('-')[1] == curMonth" @click.stop="editEvent(itemEvent)") {{itemEvent.name}}
-          li.calendar__item.next-month( v-for="itemNextDay in itemMonth.dayNextMonth")
-    popup-component(v-if="openPopup", :rect="rect", :objEdit="objEdit", :editData="editData", @objEvents="events")
-
-    pre {{ eventsDate }}
+    pre {{ monthView }}
 
 </template>
 
@@ -30,7 +24,6 @@
         rect: {},
         flag : null,
         dayName: ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],
-        curMonth: this.moment().month() + 1,
         eventsDate: [],
         editData: null,
         objEdit: null,
@@ -38,17 +31,14 @@
       }
     },
     props:{
-      months: Array,
+      //months: Array,
+      monthView: Object,
       getActiveDay: String,
-      month: Number,
+      curMonth: Number,
     },
     watch: {
       'getActiveDay': function (val) {
         this.flag = val.split('-')[0] - 1
-      },
-      'month': function (val) {
-        //console.log(val, 'month watch day');
-        this.curMonth = val
       }
     },
     methods: {
