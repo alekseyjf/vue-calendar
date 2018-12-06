@@ -1,7 +1,7 @@
 
 <template lang="pug">
   main.main
-    header-component(:monthView="monthView" :toDay="day" @getCurrentDay="currentDay" @getCurrentMonth="currentMonth")
+    header-component(:monthView="monthView" @getCurrentDay="currentDay" @getCurrentMonth="currentMonth")
     day-component(:monthView="monthView" :curMonth="curMonth" :getActiveDay="day" @getActiveDay="activeDay")
 </template>
 <script>
@@ -21,12 +21,14 @@
           days: this.moment(this.moment().month() + 1, 'MM').daysInMonth(),
           dayPrevMonth: this.moment(this.moment().month() + 1, 'MM').startOf('month').day() - 1,
           dayNextMonth: 7 - this.moment(this.moment().month() + 1, 'MM').endOf('month').day(),
+          flag: this.moment().format('DD-MM-YY'),
         }
       }
     },
     methods: {
       activeDay(day){ // get active day
-        this.day = day.day;
+        console.log(day);
+        this.monthView = day.day;
         // console.log(this.day, 'active this.day calendar');
       },
       currentDay(day){// current day

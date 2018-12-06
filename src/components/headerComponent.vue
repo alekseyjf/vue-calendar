@@ -8,7 +8,7 @@
     pre &nbsp; &nbsp; &nbsp;
     button(@click="currentDate") current date
     pre &nbsp; &nbsp; &nbsp;
-    .active-day {{currentDay}}
+    .active-day {{monthView.flag}}
 </template>
 <script>
 
@@ -16,20 +16,20 @@
     name: 'HeaderComponent',
     data() {
       return {
-        currentDay: this.moment().format('DD-MM-YY'),
+        //currentDay: this.moment().format('DD-MM-YY'),
         month: this.moment().format('MMMM'),
         currentMonth: this.moment().month() + 1,
       }
     },
     props: {
-      toDay: String,
+      // toDay: String,
       monthView: Object,
     },
-    watch: {
+    /*watch: {
       'toDay' : function (val) {
         this.currentDay = val
       }
-    },
+    },*/
     methods: {
       /*cloneObject(obj){
         return JSON.parse(JSON.stringify(obj))
