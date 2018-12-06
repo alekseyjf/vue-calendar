@@ -1,45 +1,97 @@
 <template lang="pug">
-  ul.calendar__list
-    li.calendar__item.name-month(v-for="day in dayName") {{day}}
-    li.calendar__item.prev-month(v-for="itemPrev in +firstDayMonth -1") {{itemPrev}}
-    li.calendar__item( v-for="item, i in +dayInMonth" @click="current(i)" :class="{active: flag == i}") {{item}}
-      form-component()
-    li.calendar__item.next-month(v-for="itemNext in +lastDayMonth") {{itemNext}}
+  .calendar
+    ul.calendar__list
+      li.calendar__item.name-month(v-for="day in dayName") {{day}}
 
+      li.calendar__item.next-month(v-for="itemPrevDay, j in monthView.dayPrevMonth")
+      li.calendar__item( v-for="item, index in +monthView.days", @click="current(item,index, $event)", :class="{active: flag == index}") {{ item }}
+      li.calendar__item.next-month( v-for="itemNextDay in monthView.dayNextMonth")
+    //popup-component(v-if="openPopup", :rect="rect", :objEdit="objEdit", :editData="editData", @objEvents="events")
+
+    pre {{ monthView }}
 
 </template>
+
 <script>
-  import form from './form'
+
+  //import moment from 'moment'
+
+  import PopupComponent from "./popup";
   export default {
-    components: {
-      'formComponent': form
-    },
+    components: {PopupComponent},
     data() {
       return {
-        flag: null,
-        prevMonth: [],
-        prevMonthDay: [],
-        isActive: false,
-        month: this.moment().month() + 1,
+        rect: {},
+        flag : null,
         dayName: ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],
-        firstDayMonth: this.moment().startOf('month').day(), // первый день месяца
-        dayInMonth: this.moment().endOf("month").format('DD'),
-        lastDayMonth: 7 - this.moment().endOf('month').day(),
+        eventsDate: [],
+        editData: null,
+        objEdit: null,
+        openPopup: false
+      }
+    },
+    props:{
+      //months: Array,
+      monthView: Object,
+      getActiveDay: String,
+      curMonth: Number,
+    },
+    watch: {
+      'getActiveDay': function (val) {
+        this.flag = val.split('-')[0] - 1
       }
     },
     methods: {
-      current: function (i) {
+      current: function(item,i,event){
 
+        /* работа с датами*/
         this.flag = i;
-        console.log(i+1);
-      }
-    },
-    created: function () {
+        /* передача данніх положения мішки на єкране в момент клика */
+        let date = this.flag + 1 + '-' + this.curMonth + '-' + this.moment().format('YY'),
+            _id = this.moment().unix(),
+            geRect = document.querySelector('.calendar').getBoundingClientRect();
 
+        this.$emit('getActiveDay', {
+          day: date
+        });
+
+        /* работа с датами*/
+
+        /* передача расположения мышки в момент клика */
+        this.rect = {
+          date: date,
+          _id: _id,
+          left: event.clientX - geRect.left,
+          top: event.clientY - geRect.top,
+        };
+        /* передача расположения мышки в момент клика */
+
+        //this.editData= false;// переключение кнопки редактирования в попапе
+      },
+      events(val){
+        this.eventsDate= val.retObjEvents;
+      },
+      editEvent(val){
+        // this.editData= true;// переключение кнопки редактирования в попапе
+        // this.objEdit = val;
+
+      }
+
+    },
+    created: function(){
+      /*let index = this.months[0].days,
+        res = this.months[0].days - this.months[1].dayPrevMonth;
+
+      for(let i = index; i > res; i--){
+        this.months[1].dayPrevMonthArr.unshift(i)
+      }*/
     }
   }
 </script>
 <style>
+  .calendar{
+    position: relative;
+  }
   .calendar__list {
     display: flex;
     flex-wrap: wrap;
@@ -47,29 +99,32 @@
     padding: 0;
     width: 100%;
   }
-
   .calendar__item {
     flex: 0 1 calc(100% / 7);
     width: calc(100% / 7);
-    height: 150px;
+    height: 70px;
     border: 2px solid #aaa;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
-    font-size: 50px;
+    font-size: 40px;
     position: relative;
+    flex-direction: column;
     transition: .3s;
   }
-
-  .calendar__item.active {
-    background-color: #ccc;
+  .calendar__item.active{
+    background-color: #0ff;
   }
-
   .next-month,
-  .prev-month {
+  .prev-month{
     background-color: #eee;
   }
-  .name-month{
-    background-color: #dfd;
+
+
+  .active .popup{
+    display: block;
+  }
+  b{
+    font-size: 16px
   }
 </style>
