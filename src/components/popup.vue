@@ -1,12 +1,14 @@
 <template lang="pug">
-  .popup(:style="{top: getRect.top + 'px', left: getRect.left + 'px'}")
+  .popup(:style="{top: objPopup.top + 'px', left: objPopup.left + 'px'}")
     button(@click="closePopup").close
     input(type="text" v-model="obj.event" placeholder="event")
-    input(type="text" v-model="obj.date" placeholder="date" readonly)
+    input(type="text" v-model="objPopup.date" placeholder="date" readonly)
     input(type="text" v-model="obj.name" placeholder="name")
 
-    button(v-if="!edit", @click="writeDate") Готово
-    button(v-else, @click="editDate") Редактировать
+    button(v-if="edit", @click="writeDate") Готово
+    template(v-else)
+      button(@click="editDate") Редактировать
+      button(@click="deleteDate") Удалить
 </template>
 <script>
   export default {
@@ -19,18 +21,15 @@
           date: '',
           name: ''
         },
-        getRect: {},
-        eventsObj: [],
-        edit: false
+        edit: true,
+        index: null
       }
     },
     props:{
-      rect: Object, // это обеспечивает проверку, что свойство rect будет типа Object
+      objPopup: Object,
+      events: Array,
+      editData: Number
     },
-        /*[
-
-        'rect', 'editData', 'objEdit'],*/
-
     /*watch: {
       'rect': function(val){
         this.getRect = val;
@@ -39,51 +38,73 @@
       'editData': function(edit){
         this.edit = edit;
         console.log(this.edit);
-      },
-      'objEdit': function (obj) {
-        this.obj._id = obj._id;
-        this.obj.date = obj.date;
-        this.obj.event = obj.event;
-        this.obj.name = obj.name;
       }
     },*/
     mounted: function() {
-      // this.$emit('название' [, данные]);
-      this.getRect = this.rect;
-      console.log(this.getRect, 'this.getRect');
+      if( this.editData != null){
+        this.edit = false
+
+        for( let i=0; i < this.events.length; i++){
+          if(this.events[i]._id == this.editData){
+            this.index = i;
+            this.obj._id = this.events[i]._id;
+            this.obj.date = this.events[i].date;
+            this.obj.event = this.events[i].event;
+            this.obj.name = this.events[i].name;
+
+          }
+        }
+      }
+
+
     },
     methods: {
       cloneObject(obj){
         return JSON.parse(JSON.stringify(obj))
       },
       closePopup(){
-        this.edit= false;
-        this.obj._id = this.obj.event = this.obj.date = this.obj.name = '';
+        this.$emit('closePopup', {
+          close: false
+        });
       },
       writeDate(){
-        // this.obj._id = this.getRect._id;
-        // this.eventsObj.push(this.cloneObject(this.obj));// создание нового события
 
-        //this.eventDay = this.cloneObject(this.obj).event
+        this.obj._id = this.objPopup._id;
+        this.obj.date = this.objPopup.date;
+        if(this.obj.name == '' || this.obj.event == ''){
+          alert('поле не должно быть пустым')
+          return
+        }
+        this.events.push(this.cloneObject(this.obj));// создание нового события'
 
-        //this.flagActive=false;
-        // this.obj._id = this.obj.event = this.obj.date = this.obj.name = '';// очищение полей
-        // this.$emit('objEvents', {
-        //   retObjEvents: this.eventsObj
-        // });
+        this.$emit('closePopup', {
+          close: false
+        });
       },
-      editDate: function(){
-        console.log(this.edit);
-        // for( let i=0; i < this.eventsObj.length; i++){
-        //   if(this.eventsObj[i]._id == this.obj._id){
-        //     this.eventsObj[i].date = this.obj.date;
-        //     this.eventsObj[i].event = this.obj.event;
-        //     this.eventsObj[i].name = this.obj.name;
-        //   }
-        // }
-        // this.obj._id = this.obj.event = this.obj.date = this.obj.name = '';// очищение полей
+      editDate(){
 
+        if(this.obj.name == '' || this.obj.event == ''){
+          alert('поле не должно быть пустым')
+          return
+        }
+        //this.events[this.index]._id = this.obj._id;
+        //this.events[this.index].date = this.obj.date;
+        this.events[this.index].event = this.obj.event;
+        this.events[this.index].name = this.obj.name;
+
+        this.edit = true;
+        this.$emit('closePopup', {
+          close: false
+        });
       },
+      deleteDate(){
+        this.events.splice(this.index, 1);
+
+        this.edit = true;
+        this.$emit('closePopup', {
+          close: false
+        });
+      }
     }
   }
 </script>

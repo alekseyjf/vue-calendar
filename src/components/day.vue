@@ -4,10 +4,12 @@
       li.calendar__item.name-month(v-for="day in dayName") {{day}}
 
       li.calendar__item.next-month(v-for="itemPrevDay, j in monthView.dayPrevMonth")
-      li.calendar__item( v-for="item, index in +monthView.days", @click="current(item,index, $event)", :class="{active: flag == index}") {{ item }}
+      li.calendar__item( v-for="(item, index) in +monthView.days", @click="current(item,index, $event)", :class="{active: flag == index}") {{ item }}
+        button(v-for="itemEvent in events", v-if="itemEvent.date.split('-')[0] == index + 1 && itemEvent.date.split('-')[1] == monthView.month", @click.stop="editOrRemove(itemEvent._id)") {{itemEvent.event}}
       li.calendar__item.next-month( v-for="itemNextDay in monthView.dayNextMonth")
-    //popup-component(v-if="openPopup", :rect="rect", :objEdit="objEdit", :editData="editData", @objEvents="events")
+    popup-component(v-if="openPopup", :objPopup="objPopup", :editData="editData", @closePopup="closePopup", :events="events")
 
+    pre {{ events }}
     pre {{ monthView }}
 
 </template>
@@ -21,13 +23,14 @@
     components: {PopupComponent},
     data() {
       return {
-        rect: {},
+        objPopup: {},
         flag : null,
         dayName: ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],
         eventsDate: [],
         editData: null,
         objEdit: null,
-        openPopup: false
+        openPopup: false,
+          events: []
       }
     },
     props:{
@@ -42,8 +45,14 @@
       }
     },
     methods: {
+      closePopup(val){
+        this.openPopup= val.close;
+        this.$emit('setEvents', {
+          events: this.events
+        })
+      },
       current: function(item,i,event){
-
+        this.editData = null;
         /* работа с датами*/
         this.flag = i;
         /* передача данніх положения мішки на єкране в момент клика */
@@ -58,7 +67,7 @@
         /* работа с датами*/
 
         /* передача расположения мышки в момент клика */
-        this.rect = {
+        this.objPopup = {
           date: date,
           _id: _id,
           left: event.clientX - geRect.left,
@@ -66,17 +75,13 @@
         };
         /* передача расположения мышки в момент клика */
 
-        //this.editData= false;// переключение кнопки редактирования в попапе
+        this.openPopup = true;
+        // переключение кнопки редактирования в попапе
       },
-      events(val){
-        this.eventsDate= val.retObjEvents;
-      },
-      editEvent(val){
-        // this.editData= true;// переключение кнопки редактирования в попапе
-        // this.objEdit = val;
-
+      editOrRemove(id){
+        this.editData = id;
+        this.openPopup = true;
       }
-
     },
     created: function(){
       /*let index = this.months[0].days,
@@ -102,7 +107,7 @@
   .calendar__item {
     flex: 0 1 calc(100% / 7);
     width: calc(100% / 7);
-    height: 70px;
+    min-height: 70px;
     border: 2px solid #aaa;
     display: flex;
     align-items: center;
