@@ -1,5 +1,6 @@
 <template lang="pug">
   .form
+    //button.fast-event(@click="createFastEvent")
     .left
       button(@click="prevMonth").btn.btn-prev prev
       p.header__month {{month}}
@@ -12,7 +13,10 @@
     .right
       input(type="text", @input="findEvent($event)")
       ul.found__list(v-if="foundEvent.length > 0")
-        li.found__item(v-for="item in foundEvent") {{item.name}}
+        li.found__item(v-for="item in foundEvent")
+          span {{item.name}}
+          <!--br-->
+          <!--b {{ item.date }}-->
 </template>
 <script>
 
@@ -123,35 +127,28 @@
       },
       findEvent($event){
         if($event.target.value.length > 1){
-          let eventLover,
-              targetValue = $event.target.value.toLowerCase();
+          let eventLover;
           this.foundEvent = this.events.filter((event)=>{
-            //eventLover = event.event.toLowerCase();
             eventLover = event.event.toLowerCase().slice(0, $event.target.value.length);
 
-            /*for(let i=0; i < targetValue.length; i++){
-              if(eventLover[i] == $event.target.value[i]){
-                return event
-              }
-            }*/
-
-            //return ~$event.target.value.indexOf(event.event)
-
-            if(eventLover == $event.target.value) return event
+            if(eventLover == $event.target.value) {
+              //let date = event.date.split('-').slice(0, 2).reverse().join('-');
+              //event.date = this.moment(date).format('DD MMMM');
+              return event
+            }
           });
-
-          console.log(this.foundEvent);
 
         } else {
           this.foundEvent = []
         }
-
-        /**/
+      },
+      createFastEvent(){
+        this.events
       }
     }
   }
 </script>
-<style>
+<style scoped>
   .form{
     display: flex;
     justify-content: space-between;
@@ -181,5 +178,8 @@
   }
   .header__month{
     width: 120px;
+  }
+  b{
+    font-size: 12px
   }
 </style>

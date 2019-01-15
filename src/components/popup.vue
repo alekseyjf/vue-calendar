@@ -1,6 +1,6 @@
 <template lang="pug">
   .popup(:style="{top: objPopup.top + 'px', left: objPopup.left + 'px'}")
-    button(@click="closePopup").close
+    button(@click="closePopup").close x
     input(type="text" v-model="obj.event" placeholder="event")
     input(type="text" v-model="objPopup.date" placeholder="date" readonly)
     input(type="text" v-model="obj.name" placeholder="name")
@@ -129,12 +129,15 @@
 
   .close {
     position: absolute;
-    display: block;
+    display: flex;
     height: 15px;
     width: 15px;
     right: 5px;
     top: 5px;
     border: none;
-    background-color: #333;
+    color: #000;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
   }
 </style>
