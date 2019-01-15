@@ -4,7 +4,7 @@
       li.calendar__item.name-month(v-for="day in dayName") {{day}}
 
       li.calendar__item.next-month(v-for="itemPrevDay, j in monthView.dayPrevMonth")
-      li.calendar__item( v-for="(item, index) in +monthView.days", @click="current(item,index, $event)", :class="{active: flag == index}") {{ item }}
+      li.calendar__item( v-for="(item, index) in +monthView.days", @click="current(item,index, $event)", :class="{active: monthView.flag.split('-')[0]- 1 == index}") {{ item }}
         button(v-for="itemEvent in events", v-if="itemEvent.date.split('-')[0] == index + 1 && itemEvent.date.split('-')[1] == monthView.month", @click.stop="editOrRemove(itemEvent._id)") {{itemEvent.event}}
       li.calendar__item.next-month( v-for="itemNextDay in monthView.dayNextMonth")
     popup-component(v-if="openPopup", :objPopup="objPopup", :editData="editData", @closePopup="closePopup", :events="events")
@@ -36,15 +36,23 @@
     props:{
       //months: Array,
       monthView: Object,
-      getActiveDay: String,
+      //getActiveDay: String,
       curMonth: Number,
     },
     watch: {
-      'getActiveDay': function (val) {
+      /*'getActiveDay': function (val) {
+        console.log(val);
         this.flag = val.split('-')[0] - 1
-      }
+        console.log('this.flag', this.flag);
+      }*/
+    },
+    computed: {
+
     },
     methods: {
+      /*curActiveDay(){
+        this.flag = this.getActiveDay
+      }*/
       closePopup(val){
         this.openPopup= val.close;
         this.$emit('setEvents', {

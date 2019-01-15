@@ -18,6 +18,7 @@
         events: [],
         monthView: {
           month: this.moment().month() + 1,
+          year: this.moment().format('YY'),
           monthName: this.moment().month(this.moment().month()).format('MMMM'),
           days: this.moment(this.moment().month() + 1, 'MM').daysInMonth(),
           dayPrevMonth: this.moment(this.moment().month() + 1, 'MM').startOf('month').day() - 1,
@@ -33,7 +34,9 @@
         // console.log(this.day, 'active this.day calendar');
       },
       currentDay(day){// current day
-        this.day = day.returnCurrentDay;
+        console.log(day);
+        this.day = day.returnCurrentDay.split('-')[0];
+        console.log(this.day);
         //console.log(this.day, 'current this.day calendar');
       },
       currentMonth(month){

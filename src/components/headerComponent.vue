@@ -8,7 +8,7 @@
       pre &nbsp; &nbsp; &nbsp;
       button(@click="currentDate") current date
       pre &nbsp; &nbsp; &nbsp;
-      .active-day {{monthView.flag}}
+      .active-day {{monthView.flag.split('-')[0]}}.{{monthView.month}}.{{ monthView.year }}
 
     .right
       input(type="text", @input="findEvent($event)")
@@ -44,6 +44,10 @@
 
         /* запись в объект */
         this.monthView.month -= 1;
+        if( this.monthView.month == 0 ){
+          this.monthView.month = 12;
+          this.monthView.year -= 1;
+        }
         this.monthView.monthName= this.moment().month(this.monthView.month - 1).format('MMMM');
         this.monthView.days = this.moment(this.monthView.month, 'MM').daysInMonth();
         this.monthView.dayPrevMonth = this.moment(this.monthView.month, 'MM').startOf('month').day() - 1 == -1 ? 6 : this.moment(this.monthView.month, 'MM').startOf('month').day() - 1;
@@ -70,6 +74,10 @@
 
         /* запись в объект */
         this.monthView.month += 1;
+        if( this.monthView.month == 13 ){
+          this.monthView.month = 1;
+          this.monthView.year = +this.monthView.year + 1;
+        }
         this.monthView.days = this.moment(this.monthView.month, 'MM').daysInMonth();
         this.monthView.monthName= this.moment().month(this.monthView.month - 1).format('MMMM');
         this.monthView.dayPrevMonth = this.moment(this.monthView.month, 'MM').startOf('month').day() - 1 == -1 ? 6 : this.moment(this.monthView.month, 'MM').startOf('month').day() - 1;
