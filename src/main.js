@@ -9,6 +9,8 @@ import moment from 'moment'
 
 Vue.prototype.moment = moment
 
+Vue.prototype.moment = require('moment');
+
 new Vue({
   el: '#app',
   render: h => h(App)

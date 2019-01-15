@@ -1,14 +1,22 @@
 <template lang="pug">
   .form
-    input(type="text")
-    pre &nbsp; &nbsp; &nbsp;
-    button(@click="prevMonth").btn.btn-prev prev
-    p {{month}}
-    button.btn.btn-next next
-    pre &nbsp; &nbsp; &nbsp;
-    button(@click="currentDate") current date
-    pre &nbsp; &nbsp; &nbsp;
-    .active-day {{currentDay}}
+    //button.fast-event(@click="createFastEvent")
+    .left
+      button(@click="prevMonth").btn.btn-prev prev
+      p.header__month {{month}}
+      button(@click="nextMonth").btn.btn-next next
+      pre &nbsp; &nbsp; &nbsp;
+      button(@click="currentDate") current date
+      pre &nbsp; &nbsp; &nbsp;
+      .active-day {{monthView.flag}}
+
+    .right
+      input(type="text", @input="findEvent($event)")
+      ul.found__list(v-if="foundEvent.length > 0")
+        li.found__item(v-for="item in foundEvent")
+          span {{item.name}}
+          <!--br-->
+          <!--b {{ item.date }}-->
 </template>
 <script>
 
@@ -18,41 +26,160 @@
       return {
         currentDay: this.moment().format('DD-MM-YY'),
         month: this.moment().format('MMMM'),
+        currentMonth: this.moment().month() + 1,
+        foundEvent: []
       }
     },
-    props: ['toDay', 'months'],
-    watch: {
-      'toDay' : function (val) {
-        this.currentDay = val
-      }
+    props: {
+      monthView: Object,
+      events: Array
     },
     methods: {
+      /*cloneObject(obj){
+        return JSON.parse(JSON.stringify(obj))
+      },*/
       prevMonth(){
-        /*this.months[1].month -= 1;
-        this.months[1].days = this.moment(this.months[1].month, 'MM').daysInMonth();
-        this.months[1].dayPrevMonth = this.moment(this.months[1].month, 'MM').startOf('month').day() - 1;
-        this.months[1].dayNextMonth = 7 - this.moment(this.months[1].month, 'MM').endOf('month').day();*/
 
-        let obj = {
-          month: this.months[0].month - 1,
-          days: this.moment(this.months[0].month, 'MM').daysInMonth(),
-          dayPrevMonth: this.moment(this.months[0].month, 'MM').startOf('month').day() -1,
-          dayNextMonth: 7 - this.moment(this.months[0].month, 'MM').endOf('month').day(),
-          currentMonth: false
-        }
+
+
+        /* запись в объект */
+        this.monthView.month -= 1;
+        this.monthView.monthName= this.moment().month(this.monthView.month - 1).format('MMMM');
+        this.monthView.days = this.moment(this.monthView.month, 'MM').daysInMonth();
+        this.monthView.dayPrevMonth = this.moment(this.monthView.month, 'MM').startOf('month').day() - 1 == -1 ? 6 : this.moment(this.monthView.month, 'MM').startOf('month').day() - 1;
+        this.monthView.dayNextMonth = 7 - this.moment(this.monthView.month, 'MM').endOf('month').day() == 7 ? 0 : 7 - this.moment(this.monthView.month, 'MM').endOf('month').day();
+        /* запись в объект */
+
+        /* вывод полного названия текущего месяца календаря */
+        this.month = this.moment().month(this.monthView.month - 1).format('MMMM');
+        /* вывод полного названия текущего месяца календаря */
+
+        /* получение месяца из полной даты*/
+        let arr = this.monthView.flag.split('-');
+        arr[1] = this.monthView.month;
+        this.monthView.flag = arr.join('-');
+        /* получение месяца из полной даты*/
+
+        this.$emit('getCurrentMonth', {
+          retCurMonth: this.monthView.month
+          /* передача выбраного месяца */
+        });
 
       },
-      currentDate(){
-        this.currentDay= this.moment().format('DD-MM-YY');
+      nextMonth(){
+
+        /* запись в объект */
+        this.monthView.month += 1;
+        this.monthView.days = this.moment(this.monthView.month, 'MM').daysInMonth();
+        this.monthView.monthName= this.moment().month(this.monthView.month - 1).format('MMMM');
+        this.monthView.dayPrevMonth = this.moment(this.monthView.month, 'MM').startOf('month').day() - 1 == -1 ? 6 : this.moment(this.monthView.month, 'MM').startOf('month').day() - 1;
+        this.monthView.dayNextMonth = 7 - this.moment(this.monthView.month, 'MM').endOf('month').day() == 7 ? 0 : 7 - this.moment(this.monthView.month, 'MM').endOf('month').day();
+        /* запись в объект */
+
+        /* вывод полного названия текущего месяца календаря */
+        this.month = this.moment().month(this.monthView.month - 1).format('MMMM');
+        /* вывод полного названия текущего месяца календаря */
+
+        /* получение месяца из полной даты*/
+        let arr = this.monthView.flag.split('-')
+        arr[1] = this.monthView.month;
+        this.monthView.flag = arr.join('-')
+        /* получение месяца из полной даты*/
+
+        this.$emit('getCurrentMonth', {
+          retCurMonth: this.monthView.month
+          /* передача выбраного месяца */
+        });
+      },
+      currentDate() {
+        /* получение текущей даты */
+        this.monthView.flag= this.moment().format('DD-MM-YY');
+        this.currentMonth= this.moment().month() + 1;
+        /* получение текущей даты */
+
+        /* запись в объект */
+        this.monthView.month = this.currentMonth;
+        this.monthView.monthName= this.moment().month(this.currentMonth - 1).format('MMMM');
+        this.monthView.days = this.moment(this.currentMonth, 'MM').daysInMonth();
+        this.monthView.dayPrevMonth = this.moment(this.currentMonth, 'MM').startOf('month').day() - 1 == -1 ? 6 : this.moment(this.currentMonth, 'MM').startOf('month').day() - 1;
+        this.monthView.dayNextMonth = 7 - this.moment(this.currentMonth, 'MM').endOf('month').day() == 7 ? 0 : 7 - this.moment(this.currentMonth, 'MM').endOf('month').day();
+        /* запись в объект */
+
+        /* вывод полного названия текущего месяца календаря */
+        this.month = this.moment().month(this.monthView.month - 1).format('MMMM');
+        /* вывод полного названия текущего месяца календаря */
+
+        //console.log(this.currentMonth, 'this.currentMonth header');
+        this.$emit('getCurrentMonth', {
+          retCurMonth: this.currentMonth
+          /* передача выбраного месяца */
+        });
+
         this.$emit('getCurrentDay', {
           returnCurrentDay: this.currentDay
+          /* передача текущего дня и месяца */
         })
+      },
+      checkFound(str) {
+        var lowerStr = str.toLowerCase();
+
+        return !!(~lowerStr.indexOf('viagra') || ~lowerStr.indexOf('xxx'));
+      },
+      findEvent($event){
+        if($event.target.value.length > 1){
+          let eventLover;
+          this.foundEvent = this.events.filter((event)=>{
+            eventLover = event.event.toLowerCase().slice(0, $event.target.value.length);
+
+            if(eventLover == $event.target.value) {
+              //let date = event.date.split('-').slice(0, 2).reverse().join('-');
+              //event.date = this.moment(date).format('DD MMMM');
+              return event
+            }
+          });
+
+        } else {
+          this.foundEvent = []
+        }
+      },
+      createFastEvent(){
+        this.events
       }
     }
   }
 </script>
-<style>
+<style scoped>
   .form{
     display: flex;
+    justify-content: space-between;
+  }
+  .left{
+  display: flex;
+  }
+  .right{
+    position: relative;
+  }
+  .found__list{
+    list-style: none;
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    border: 1px solid grey;
+    background-color: #fff;
+    z-index: 1;
+    padding: 0;
+    text-align: left;
+  }
+  .found__item{
+    padding: 4px 16px;
+  }
+  .found__item:not(:last-child){
+    border-bottom: 1px solid grey;
+  }
+  .header__month{
+    width: 120px;
+  }
+  b{
+    font-size: 12px
   }
 </style>

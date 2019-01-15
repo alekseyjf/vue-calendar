@@ -1,18 +1,16 @@
 <template lang="pug">
-  ul.calendar__list
-    li.calendar__item.name-month(v-for="day in dayName") {{day}}
+  .calendar
+    ul.calendar__list
+      li.calendar__item.name-month(v-for="day in dayName") {{day}}
 
-    //b( v-for="itemEvent in eventsObj", v-if="itemEvent._id == i + 1" @click="openPopup(itemEvent._id)" ) {{itemEvent.event}}
-    //li.calendar__item.next-month(v-for="itemNext in +lastDayMonth") {{itemNext}}
+      li.calendar__item.next-month(v-for="itemPrevDay, j in monthView.dayPrevMonth")
+      li.calendar__item( v-for="(item, index) in +monthView.days", @click="current(item,index, $event)", :class="{active: flag == index}") {{ item }}
+        button(v-for="itemEvent in events", v-if="itemEvent.date.split('-')[0] == index + 1 && itemEvent.date.split('-')[1] == monthView.month", @click.stop="editOrRemove(itemEvent._id)") {{itemEvent.event}}
+      li.calendar__item.next-month( v-for="itemNextDay in monthView.dayNextMonth")
+    popup-component(v-if="openPopup", :objPopup="objPopup", :editData="editData", @closePopup="closePopup", :events="events")
 
-    template( v-for="itemMonth, i in months" )
-      template( v-if="itemMonth.currentMonth" )
-        li.calendar__item.next-month(v-for="itemPrevDay, j in months[1].dayPrevMonthArr") {{itemPrevDay}}
-        li.calendar__item( v-for="item, k in +itemMonth.days", @click="current(item,k)", :class="{active: flag == k}") {{ item }}
-        li.calendar__item.next-month( v-for="itemNextDay in itemMonth.dayNextMonth") {{itemNextDay}}
-
-
-    pre {{ months }}
+    pre {{ events }}
+    pre {{ monthView }}
 
 </template>
 
@@ -20,39 +18,85 @@
 
   //import moment from 'moment'
 
+  import PopupComponent from "./popup";
   export default {
+    components: {PopupComponent},
     data() {
       return {
+        objPopup: {},
         flag : null,
         dayName: ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],
+        eventsDate: [],
+        editData: null,
+        objEdit: null,
+        openPopup: false,
+          events: []
       }
     },
-    props: ['months', 'getActiveDay'],
-    watch: { 'getActiveDay': function (val) {
+    props:{
+      //months: Array,
+      monthView: Object,
+      getActiveDay: String,
+      curMonth: Number,
+    },
+    watch: {
+      'getActiveDay': function (val) {
         this.flag = val.split('-')[0] - 1
       }
     },
     methods: {
-      current: function(item,i){
-
-        this.flag = i;
-        this.$emit('getActiveDay', {
-          day: this.flag + 1
+      closePopup(val){
+        this.openPopup= val.close;
+        this.$emit('setEvents', {
+          events: this.events
         })
       },
+      current: function(item,i,event){
+        this.editData = null;
+        /* работа с датами*/
+        this.flag = i;
+        /* передача данніх положения мішки на єкране в момент клика */
+        let date = this.flag + 1 + '-' + this.curMonth + '-' + this.moment().format('YY'),
+            _id = this.moment().unix(),
+            geRect = document.querySelector('.calendar').getBoundingClientRect();
 
+        this.$emit('getActiveDay', {
+          day: date
+        });
+
+        /* работа с датами*/
+
+        /* передача расположения мышки в момент клика */
+        this.objPopup = {
+          date: date,
+          _id: _id,
+          left: event.clientX - geRect.left,
+          top: event.clientY - geRect.top,
+        };
+        /* передача расположения мышки в момент клика */
+
+        this.openPopup = true;
+        // переключение кнопки редактирования в попапе
+      },
+      editOrRemove(id){
+        this.editData = id;
+        this.openPopup = true;
+      }
     },
     created: function(){
-      let index = this.months[0].days,
+      /*let index = this.months[0].days,
         res = this.months[0].days - this.months[1].dayPrevMonth;
 
       for(let i = index; i > res; i--){
         this.months[1].dayPrevMonthArr.unshift(i)
-      }
+      }*/
     }
   }
 </script>
 <style>
+  .calendar{
+    position: relative;
+  }
   .calendar__list {
     display: flex;
     flex-wrap: wrap;
@@ -63,7 +107,7 @@
   .calendar__item {
     flex: 0 1 calc(100% / 7);
     width: calc(100% / 7);
-    height: 70px;
+    min-height: 70px;
     border: 2px solid #aaa;
     display: flex;
     align-items: center;
